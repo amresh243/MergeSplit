@@ -1,0 +1,316 @@
+﻿<Window x:Class="MergeSplit.MergerSplitter"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="mSelf"
+    xmlns:local="clr-namespace:MergeSplit"
+    Title="Merger/Splitter" Height="480" Width="600" Loaded="OnLoad" MinHeight="464" MinWidth="600"
+    Icon="/MergeSplit;component/res/app.ico" Closed="mSelf_Closed">
+  <Window.CommandBindings>
+  </Window.CommandBindings>
+  <Border Name="appborder" BorderThickness="8" CornerRadius="6">
+    <Border.BorderBrush>
+      <LinearGradientBrush>
+        <LinearGradientBrush.GradientStops>
+          <GradientStop x:Name="bbBlue" Offset="0.00"  Color="blue" />
+          <GradientStop x:Name="bbGreen" Offset="0.50" Color="Green" />
+        </LinearGradientBrush.GradientStops>
+      </LinearGradientBrush>
+    </Border.BorderBrush>
+    <DockPanel Background="{x:Static SystemColors.ActiveCaptionBrush}">
+      <Border Name="headerborder" DockPanel.Dock="Top" CornerRadius="6" BorderThickness="1" BorderBrush="black" Padding="8" Margin="4 8 4 8">
+        <Border.Background>
+          <LinearGradientBrush>
+            <LinearGradientBrush.GradientStops>
+              <GradientStop Offset="0.00"  Color="Blue" />
+              <GradientStop Offset="1.00" Color="Green" />
+            </LinearGradientBrush.GradientStops>
+          </LinearGradientBrush>
+        </Border.Background>
+        <TextBlock Name="headerblock" FontSize="16" Foreground="White" TextWrapping="WrapWithOverflow" TextTrimming="None">
+               Merger: Merge all the items in the list below
+        </TextBlock>
+      </Border>
+      <TabControl Name="mstab" SelectionChanged="OnTabChange" TabStripPlacement="Top">
+        <TabItem Name="mergetab" Header="Merge Files" BorderBrush="Blue" Foreground="Blue">
+          <Grid x:Name="maingrid">
+            <Grid.RowDefinitions>
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.Background>
+              <LinearGradientBrush>
+                <LinearGradientBrush.GradientStops>
+                  <GradientStop Offset="0.00"  Color="Blue" />
+                  <GradientStop Offset="1.00" Color="Green" />
+                </LinearGradientBrush.GradientStops>
+              </LinearGradientBrush>
+            </Grid.Background>
+            <ListView Name="mergelist" ItemsSource="{Binding ElementName=mSelf, Path=MergeItems}" Foreground="Blue" Grid.RowSpan="8" Grid.ColumnSpan="10" BorderBrush="Blue" Margin="0 0 4 0" FontSize="12">
+              <ListView.View>
+                <GridView>
+                  <GridViewColumn Header="SN" DisplayMemberBinding="{Binding Path=Number}" Width="40" />
+                  <GridViewColumn x:Name="mlFile"  Header="File" Width="334">
+                    <GridViewColumn.CellTemplate>
+                      <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                          <Image Source="{Binding Icon}" Width="16" Height="16" Margin="2 0 2 0"/>
+                          <TextBlock Text="{Binding Name}"/>
+                        </StackPanel>
+                      </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                  </GridViewColumn>
+                  <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Path=FSize}" Width="75" />
+                </GridView>
+              </ListView.View>
+            </ListView>
+            <CheckBox Name="chbGMR" BorderBrush="Blue" Content="Generate Merge _Report" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Center" Foreground="White" />
+            <Label Content="Buffer" Grid.Row="8" Grid.Column="4" VerticalAlignment="Center" Target="{Binding ElementName=tbMB}" Foreground="White" />
+            <Label Content="00:00:00" Name="lbmTime" Grid.Row="8" FontSize="9" Foreground="White" Grid.Column="11" VerticalAlignment="Center" />
+            <TextBox Text="8" Foreground="Blue" Name="tbMB" Grid.Row="8" Grid.Column="5" TextAlignment="Center" BorderBrush="Blue" VerticalAlignment="Center" FontSize="14" />
+            <Label Content="MB" Grid.Row="8" Grid.Column="6" Margin="4 0 0 0" VerticalAlignment="Center" Foreground="White" />
+            <Button Name="btStopM" Grid.Row="0" Grid.Column="10" Visibility="Hidden" ToolTip="Stop merging" Click="OnClickMStop" BorderBrush="Blue">
+              <Image Source="/MergeSplit;component/res/stop.png" />
+            </Button>
+            <Button Click="OnPlayPauseM" Name="btPPM" Grid.Row="0" Visibility="Hidden" Grid.Column="11" ToolTip="Pause" BorderBrush="Blue">
+              <Image Source="/MergeSplit;component/res/pause.png" />
+            </Button>
+            <Button Name="btSMF" Grid.Row="2" Grid.Column="10" Click="OnSaveList" ToolTip="Save current list" BorderBrush="Blue">
+              <Image Source="/MergeSplit;component/res/save_16.png" />
+            </Button>
+            <Button Name="btLMF" Grid.Row="2" Grid.Column="11" ToolTip="Load saved merge list" Click="OnLoadList" BorderBrush="Blue">
+              <Image Source="/MergeSplit;component/res/app.ico" />
+            </Button>
+            <Button Name="btUp" Grid.Row="4" Click="OnUp" Grid.Column="10" ToolTip="Move item/s up" BorderBrush="Blue">
+              <Image Source="/MergeSplit;component/res/down.png" />
+            </Button>
+            <Button Name="btAdd" Click="OnAdd" Grid.Row="4" Grid.Column="11" ToolTip="Add item" BorderBrush="Blue">
+              <Image Source="/MergeSplit;component/res/aad.png" />
+            </Button>
+            <Button Name="btDown" Grid.Row="5" Click="OnDown" Grid.Column="10" ToolTip="Move item/s down" BorderBrush="Blue">
+              <Image Source="/MergeSplit;component/res/up.png" />
+            </Button>
+            <Button Name="btRem" Grid.Row="5" Grid.Column="11" Click="OnRemove" ToolTip="Remove item" BorderBrush="Blue">
+              <Image Source="/MergeSplit;component/res/rem.png" />
+            </Button>
+            <Button Name="btSMR" Grid.Row="6" Grid.RowSpan="2" Click="OnSaveM" Grid.Column="10" Grid.ColumnSpan="2" ToolTip="Save merged file" BorderBrush="Blue">
+              <Image Source="/MergeSplit;component/res/save_32m.png" />
+            </Button>
+            <CheckBox x:Name="mcbScanPart" Content="_Scan Parts" IsChecked="True" Grid.Row="8" Grid.Column="7" Grid.ColumnSpan="2" VerticalAlignment="Center" BorderBrush="Blue" Foreground="White" />
+            <CheckBox Content="_Delete Parts" Grid.Row="8" Name="cbDelPart" Grid.Column="9" Grid.ColumnSpan="2" VerticalAlignment="Center" BorderBrush="Blue" Foreground="White" />
+            <ProgressBar Name="pbMerger" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="12" Margin="0 4 0 0" BorderBrush="Blue" Value="100" Maximum="100">
+              <ProgressBar.Foreground>
+                <LinearGradientBrush>
+                  <LinearGradientBrush.GradientStops>
+                    <GradientStop Offset="0.00"  Color="Blue" />
+                    <GradientStop Offset="1.00" Color="Green" />
+                  </LinearGradientBrush.GradientStops>
+                </LinearGradientBrush>
+              </ProgressBar.Foreground>
+            </ProgressBar>
+            <TextBlock Grid.Row="9" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Name="tbmVal" FontSize="14" Foreground="Chocolate" FontWeight="Bold">
+            </TextBlock>
+          </Grid>
+        </TabItem>
+        <TabItem Name="splittab" Header="Split File" BorderBrush="Green" Foreground="Green">
+          <Grid Name="sgrid">
+            <Grid.RowDefinitions>
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.Background>
+              <LinearGradientBrush>
+                <LinearGradientBrush.GradientStops>
+                  <GradientStop Offset="0.00" Color="Green" />
+                  <GradientStop Offset="1.00"  Color="Blue" />
+                </LinearGradientBrush.GradientStops>
+              </LinearGradientBrush>
+            </Grid.Background>
+            <Label Content="_Source" VerticalAlignment="Center" Target="{Binding ElementName=btSS}" Foreground="White" />
+            <TextBox Name="tbSS" VerticalContentAlignment="Center" Grid.Row="0" FontSize="14" Foreground="Green" Grid.Column="1" Grid.ColumnSpan="9" Margin="4, 0, 8, 4" BorderBrush="Green" IsReadOnly="True" />
+            <Button Name="btSS" Grid.Row="0" Grid.Column="10" Foreground="Green" Grid.ColumnSpan="2" Margin="0, 0, 0, 4" ToolTip="Load file to split" BorderBrush="Green" Click="OnSplitSrc"/>
+            <Border ToolTip="Splitter Settings" CornerRadius="6" BorderThickness="1" BorderBrush="Green" Grid.Row="1" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="10" Margin="0, 0, 8, 0" >
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition />
+                  <RowDefinition />
+                  <RowDefinition />
+                  <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <RadioButton Name="rbSBS" Content="Split By Si_ze" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="12" Margin="4 0 0 0" BorderBrush="Green" IsChecked="True" VerticalAlignment="Center" Checked="OnBySize" Foreground="White" IsEnabled="True"/>
+                <RadioButton Name="rbSBN" Content="Split By _Number" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="4 0 0 0" BorderBrush="Green" VerticalAlignment="Center" Checked="OnByNumber" Foreground="White" IsEnabled="True" IsChecked="False"/>
+                <TextBox Name="tbSBS" Grid.Row="0" Foreground="Green" Grid.Column="4" Grid.ColumnSpan="2" Margin="0 4 0 4" BorderBrush="Green" FontSize="14" />
+                <TextBox Name="tbSBN" Grid.Row="1" Grid.Column="4" Foreground="Green" Grid.ColumnSpan="2" Margin="0 4 0 4" IsEnabled="False" BorderBrush="Green" FontSize="14" />
+                <ComboBox Name="cbSST" Grid.Row="0" Foreground="Green" Grid.Column="7" Grid.ColumnSpan="2" Margin="0 4 30 4" BorderBrush="Green" SelectionChanged="OnSTIndexChange">
+                  <ComboBoxItem Content="Byte" IsSelected="True" />
+                  <ComboBoxItem Content="KB" />
+                  <ComboBoxItem Content="MB" />
+                  <ComboBoxItem Content="GB" />
+                  <ComboBoxItem Content="1.44M" />
+                  <ComboBoxItem Content="10M" />
+                  <ComboBoxItem Content="700M" />
+                </ComboBox>
+                <Button Name="btCF" Grid.Row="0" Grid.Column="9" Margin="0 4 15 4" Click="OnCalculate">
+                  <Image Source="/MergeSplit;component/res/sc.png" />
+                </Button>
+                <TextBlock Name="mlbFiles" Grid.Row="1" Grid.Column="7" Grid.ColumnSpan="2" Margin="0 4 0 4" Text="Files: 0" FontSize="16" Foreground="White" />
+                <Label Content="Buffer" Grid.Row="2" Grid.Column="7" VerticalAlignment="Center" Foreground="White" />
+                <TextBox Text="8" Name="tbSB" Foreground="Green" Grid.Row="2" Grid.Column="8" TextAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Green" Margin="0 4 0 4" FontSize="14" />
+                <Label Content="MB" Grid.Row="2" Grid.Column="9" Margin="4 0 0 0" VerticalAlignment="Center" Foreground="White" />
+                <CheckBox Content="_Delete Source After Split" Name="chbDSAF" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Grid.ColumnSpan="4" Margin="4 0 0 0" BorderBrush="Green" Foreground="White" />
+                <Label Content="00:00:00" Name="lbsTime" Grid.Row="3" FontSize="9" Foreground="White" Grid.Column="9" VerticalAlignment="Center" />
+                <CheckBox Content="Generate Split _Report" Name="chbGSR" BorderBrush="Green" Grid.Row="2" Margin="4 0 0 0" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" Foreground="White" />
+              </Grid>
+            </Border>
+            <Button Name="btStopS" Grid.Row="1" Grid.Column="10" ToolTip="Stop splitting" BorderBrush="Green" Visibility="Hidden" Click="OnClickSStop">
+              <Image Source="/MergeSplit;component/res/stop.png" />
+            </Button>
+            <Button Name="btPPS" Grid.Row="1" Grid.Column="11" ToolTip="Pause" BorderBrush="Green" Visibility="Hidden" Click="OnPlayPauseS">
+              <Image Source="/MergeSplit;component/res/pause.png" />
+            </Button>
+            <Button Name="btSSF" Grid.Row="2" Grid.Column="10" ToolTip="Save split settings" BorderBrush="Green" Click="OnSaveSList">
+              <Image Source="/MergeSplit;component/res/save_16.png" />
+            </Button>
+            <Button Name="btLSF" Grid.Row="2" Grid.Column="11" ToolTip="Load saved split setting" BorderBrush="Green" Click="OnLoadSList">
+              <Image Source="/MergeSplit;component/res/app.ico" />
+            </Button>
+            <Button Name="btSSR" Grid.Row="3" Grid.RowSpan="2" Grid.Column="10"  Grid.ColumnSpan="2" ToolTip="Save splitted files" BorderBrush="Green" Click="OnSaveS">
+              <Image Source="/MergeSplit;component/res/save_32.png" />
+            </Button>
+            <ListView ItemsSource="{Binding ElementName=mSelf, Path=SplitItems}" Name="splitlist" Foreground="Green" Grid.Row="5" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="12"  Margin="0, 4, 0, 4" BorderBrush="Green">
+              <ListView.View>
+                <GridView>
+                  <GridViewColumn Header="SN" DisplayMemberBinding="{Binding Path=Number}" Width="40" />
+                  <GridViewColumn x:Name="slFile"  Header="File" Width="430">
+                    <GridViewColumn.CellTemplate>
+                      <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                          <Image Source="{Binding Icon}" Width="16" Height="16" Margin="2 0 2 0"/>
+                          <TextBlock Text="{Binding Name}"/>
+                        </StackPanel>
+                      </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                  </GridViewColumn>
+                  <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Path=FSize}" Width="75" />
+                </GridView>
+              </ListView.View>
+            </ListView>
+            <ProgressBar Name="pbSplitter" Value="100" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="12" Margin="0 4 0 0" BorderBrush="Green">
+              <ProgressBar.Foreground>
+                <LinearGradientBrush>
+                  <LinearGradientBrush.GradientStops>
+                    <GradientStop Offset="0.00"  Color="Green" />
+                    <GradientStop Offset="1.00" Color="Blue" />
+                  </LinearGradientBrush.GradientStops>
+                </LinearGradientBrush>
+              </ProgressBar.Foreground>
+            </ProgressBar>
+            <TextBlock Grid.Row="9" Grid.Column="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Name="tbsVal" FontSize="14" Foreground="Chocolate" FontWeight="Bold">
+            </TextBlock>
+          </Grid>
+        </TabItem>
+        <TabItem Header="About" Name="tiAbout">
+          <Grid Background="Black">
+            <Grid.RowDefinitions>
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="4" Foreground="Chocolate" TextAlignment="Center" FontSize="40">
+                     File Splitter and Merger 3.2
+            </TextBlock>
+            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Background="RoyalBlue"></TextBlock>
+            <TextBlock Grid.Row="8" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" Foreground="DarkGoldenrod" FontSize="25" TextAlignment="Center">
+                     By: Amresh Kumar
+            </TextBlock>
+            <TextBlock Grid.Row="10" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="4" Foreground="DarkGoldenrod" FontSize="25" TextAlignment="Center">
+                     Copyright © Amraj 2005-2009
+            </TextBlock>
+            <TextBlock Grid.Row="23" Grid.Column="3" Foreground="RoyalBlue" FontSize="12" TextAlignment="Right">Send Feedback</TextBlock>
+          </Grid>
+        </TabItem>
+      </TabControl>
+    </DockPanel>
+  </Border>
+</Window>
